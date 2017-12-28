@@ -1,15 +1,13 @@
 package banco;
 
-import excepciones.CampoVacio;
-import excepciones.NoEsUnDNI;
-
 import java.io.*;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.function.BooleanSupplier;
 
 public class BolsaDeValores implements Serializable{
+
+    public ArrayList<Empresa> getArrayListEmpresa() {
+        return arrayListEmpresa;
+    }
 
     private ArrayList<Empresa> arrayListEmpresa = new ArrayList<>();
 
@@ -34,7 +32,7 @@ public class BolsaDeValores implements Serializable{
 
     }
 
-    public void añadirEmpresa(String nombreEmpresa, Float valorAcciones) {
+    public void añadirEmpresa(String nombreEmpresa, Double valorAcciones) {
         Empresa empresaNueva = new Empresa(nombreEmpresa, valorAcciones);
         arrayListEmpresa.add(empresaNueva);
     }

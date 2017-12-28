@@ -1,37 +1,19 @@
 package banco;
 
-import excepciones.CampoVacio;
-import excepciones.NoEsUnDNI;
+import excepciones.CampoVacioException;
+import excepciones.NoEsUnDNIException;
 import general.Utilidades;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-abstract class Persona {
+abstract public class Persona {
 
     protected String dni;
     protected String nombre;
     private static Utilidades utilidades = new Utilidades();
-    private static NoEsUnDNI noEsUnDNI = new NoEsUnDNI("El formato de DNI no es válido");
+    private static NoEsUnDNIException noEsUnDNIException = new NoEsUnDNIException("El formato de DNI no es válido");
 
-    public Persona(String dni, String nombre) throws NoEsUnDNI {
-        try {
-            if (utilidades.validarNIF(dni)) {
-                this.dni = dni;
-            } else {
-                throw noEsUnDNI;
-            }
-            if (!nombre.isEmpty()) {
-                this.nombre = nombre;
-            } else {
-                throw new CampoVacio("No le has dado un nombre.");
-            }
-        } catch (NoEsUnDNI noEsUnDNI) {
-            System.out.println(noEsUnDNI.getMessage());
-            throw noEsUnDNI;
-        } catch (CampoVacio campoVacio) {
-            System.out.println(campoVacio.getMessage());
-        }
+    public Persona(String dni, String nombre) {
+       this.dni = dni;
+       this.nombre= nombre;
     }
 
     public String getDNI() {
@@ -43,10 +25,10 @@ abstract class Persona {
             if (utilidades.validarNIF(dni)) {
                 this.dni = dni;
             } else {
-                throw noEsUnDNI;
+                throw noEsUnDNIException;
             }
-        } catch (NoEsUnDNI noEsUnDNI) {
-            System.out.println(noEsUnDNI.getMessage());
+        } catch (NoEsUnDNIException noEsUnDNIException) {
+            System.out.println(noEsUnDNIException.getMessage());
         }
     }
 
@@ -59,10 +41,10 @@ abstract class Persona {
             if (!nombre.isEmpty()) {
                 this.nombre = nombre;
             } else {
-                throw new CampoVacio("No le has dado un nombre.");
+                throw new CampoVacioException("No le has dado un nombre.");
             }
-        } catch (CampoVacio campoVacio) {
-            System.out.println(campoVacio.getMessage());
+        } catch (CampoVacioException campoVacioException) {
+            System.out.println(campoVacioException.getMessage());
         }
     }
 }

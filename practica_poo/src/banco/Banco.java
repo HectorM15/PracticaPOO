@@ -1,11 +1,15 @@
 package banco;
 
-import excepciones.CampoVacio;
-import excepciones.NoEsUnDNI;
+import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
+import excepciones.CampoVacioException;
+import excepciones.NoEsUnDNIException;
+import excepciones.SaldoInsuficienteException;
+import excepciones.SaldoNegativoVacioException;
+import general.ValidadorClientes;
+import mensajes.Mensaje;
+import mensajes.MensajeCompra;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,50 +19,57 @@ public class Banco {
     private HashMap<String, Cliente> hashMapCliente;
     private AgenteDeInversiones agenteDeInversiones;
     private Banco copiaBanco;
+    private ValidadorClientes validadorClientes = new ValidadorClientes();
 
     public Banco(String nombre, HashMap<String, Cliente> hashMapCliente, AgenteDeInversiones agenteDeInversiones) {
         try {
             if (!nombre.isEmpty()) {
                 this.nombre = nombre;
             } else {
-                throw new CampoVacio("Has dejado el nombre vacío");
+                throw new CampoVacioException("Has dejado el nombre vacío");
             }
             if (hashMapCliente.size() > 0) {
                 this.hashMapCliente = hashMapCliente;
             } else {
-                throw new CampoVacio("Has insertado una cartera de clientes vacía");
+                throw new CampoVacioException("Has insertado una cartera de clientes vacía");
             }
             this.agenteDeInversiones = agenteDeInversiones;
-        } catch (CampoVacio campoVacio) {
-            System.out.println(campoVacio.getMessage());
+        } catch (CampoVacioException campoVacioException) {
+            System.out.println(campoVacioException.getMessage());
         }
     }
 
     public void copiaDeSeguridad(String ruta) throws IOException {
         FileOutputStream s = new FileOutputStream(ruta);
-        ObjectOutputStream stream = new ObjectOutputStream (s);
+        ObjectOutputStream stream = new ObjectOutputStream(s);
         stream.defaultWriteObject();
         stream.writeObject(this);
     }
 
     public void restaurarCopiaDeSeguridad(String rutaCopia, Banco banco) throws IOException, ClassNotFoundException {
         FileInputStream s = new FileInputStream(rutaCopia);
-        ObjectInputStream stream = new ObjectInputStream (s);
+        ObjectInputStream stream = new ObjectInputStream(s);
         banco = (Banco) stream.readObject();
     }
 
     public void crearCliente(String DNI, String nombre, double saldo) {
-        Cliente clienteNuevo = new Cliente(DNI, nombre, saldo);
-        hashMapCliente.put(clienteNuevo.getDNI(), clienteNuevo);
-    }
-
-    public void eliminarCliente(String dni) {
         try {
-            hashMapCliente.remove(dni);
-        } catch (Exception e) {
+            Cliente clienteNuevo = new Cliente(DNI, nombre, saldo);
+            validadorClientes.validarCliente(clienteNuevo);
+            hashMapCliente.put(clienteNuevo.getDNI(), clienteNuevo);
+        } catch (CampoVacioException | NoEsUnDNIException | SaldoNegativoVacioException e) {
             System.out.println(e.getMessage());
         }
 
+    }
+
+    public void eliminarCliente(String dni) {
+        if (hashMapCliente.get(dni) != null) {
+            hashMapCliente.remove(dni);
+            System.out.println("El cliente con DNI " + dni + " ha sido eliminado con exito");
+        } else {
+            System.out.println("No se ha encontrado al cliente con dni " + dni);
+        }
     }
 
     public void mejorarClientePremium(String dni, AgenteDeInversiones agenteDeInversiones) {
@@ -73,11 +84,44 @@ public class Banco {
             String key = entry.getKey();
             hashMapCliente.get(key).imprimirEstado();
         }
-
     }
 
-    public void recomendarInversion() {
+    public AgenteDeInversiones getAgenteDeInversiones() {
+        return agenteDeInversiones;
+    }
 
+    public void peticionCompraAcciones(String dni,Empresa empresa, Double inversion) {
+        Cliente cliente = hashMapCliente.get(dni);
+        try {
+            validadorClientes.validarCompraAccionesCliente(cliente,inversion);
+            MensajeCompra mensajeCompra= new MensajeCompra(agenteDeInversiones.getIdentificadorOperaciones(),cliente.getNombre(),empresa.getNombre(),inversion.toString());
+            if (cliente instanceof ClientePremium == false) {
+                ((ClientePremium)cliente).getAgenteDeInversiones().añadirOperacionALaCola(mensajeCompra);
+            } else {
+                this.getAgenteDeInversiones().añadirOperacionALaCola(mensajeCompra);
+            }
+        } catch (SaldoInsuficienteException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void ventaDeAcciones(String dni,String empresa, Double inversion){
+        Cliente cliente = hashMapCliente.get(dni);
+    }
+
+    public void recomendarInversion(String dni) {
+        Object cliente = hashMapCliente.get(dni);
+        if (cliente == null) {
+            System.out.println("El cliente que has introducido no existe");
+        } else if (cliente instanceof ClientePremium == false) {
+            System.out.println("El cliente seleccionado no es premium");
+        } else {
+            Empresa empresa = ((ClientePremium) cliente).getAgenteDeInversiones().getMejorIncremento();
+            System.out.println("La empresa : " + empresa.getNombre());
+            System.out.println("Con un valor de acciones: " + empresa.getValorAcciones());
+            System.out.println("Y un incremento de : " + empresa.getIncremento());
+            System.out.println("Es la mejor opcion para invertir");
+        }
     }
 
     public void copiaDeSeguridad() {

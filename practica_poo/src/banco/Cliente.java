@@ -1,8 +1,7 @@
 package banco;
 
-import excepciones.CampoVacio;
-import excepciones.NoEsUnDNI;
-import general.Utilidades;
+import excepciones.CampoVacioException;
+import excepciones.NoEsUnDNIException;
 
 import java.io.*;
 
@@ -11,20 +10,12 @@ public class Cliente extends Persona implements Serializable{
     protected Double saldo;
     private PaqueteDeAcciones paqueteDeAcciones;
 
-    public Cliente(String DNI, String nombre, Double saldo) throws CampoVacio,NoEsUnDNI {
+    public Cliente(String DNI, String nombre, Double saldo) {
         super(DNI, nombre);
-        try{
-        if (!saldo.isNaN() && saldo>0) {
-            this.saldo = saldo;
-        } else {
-            throw new CampoVacio("No le has asignado un saldo inicial al cliente o ha sido negativo");
-        }
-        }catch (CampoVacio campoVacio){
-            System.out.println(campoVacio.getMessage());
-        }
+        this.saldo = saldo;
     }
 
-    public double getSaldo() {
+    public Double getSaldo() {
         return saldo;
     }
 
@@ -33,10 +24,10 @@ public class Cliente extends Persona implements Serializable{
             if (!saldo.isNaN() && saldo>0) {
                 this.saldo = saldo;
             } else {
-                throw new CampoVacio("No le has asignado un saldo inicial al cliente o ha sido negativo");
+                throw new CampoVacioException("No le has asignado un saldo inicial al cliente o ha sido negativo");
             }
-        }catch (CampoVacio campoVacio){
-            System.out.println(campoVacio.getMessage());
+        }catch (CampoVacioException campoVacioException){
+            System.out.println(campoVacioException.getMessage());
         }
     }
 

@@ -1,6 +1,9 @@
 package general;
 
-import excepciones.FueraDeRangoMenu;
+import banco.Cliente;
+import banco.ClientePremium;
+import banco.Empresa;
+import excepciones.FueraDeRangoMenuException;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -17,7 +20,7 @@ public class InterfazDeUsuario {
             try {
                 opcion = sc.nextInt();
                 if (opcion < 0 || opcion > 18) {
-                    throw new FueraDeRangoMenu("Ha introducido una opción incorrecta.Debe introducir un número comprendido entre 0-18 ambos inclusive");
+                    throw new FueraDeRangoMenuException("Ha introducido una opción incorrecta.Debe introducir un número comprendido entre 0-18 ambos inclusive");
                 } else {
                     switch (opcion) {
                         case 0:
@@ -36,7 +39,6 @@ public class InterfazDeUsuario {
                             String nombre = sc.next();
                             System.out.println("Introduzca el saldo inical del cliente que desea crear");
                             Double saldo = Double.valueOf(sc.next());
-
                             simulador.banco.crearCliente(dni, nombre, saldo);
                             break;
                         case 4:
@@ -56,17 +58,19 @@ public class InterfazDeUsuario {
                             simulador.banco.mejorarClientePremium(dni_premium,simulador.agenteDeInversiones);
                             break;
                         case 8:
-                            simulador.banco.recomendarInversion();
+                            System.out.println("Introduzca el DNI del cliente que desea la solicitud");
+                            String dni_cliente_premium = sc.next();
+                            simulador.banco.recomendarInversion(dni_cliente_premium);
                             break;
                         case 9:
-                            System.out.println("Introduzca el DNI del cliente que desea crear");
+                            System.out.println("Introduzca el nombre de la empresa que desea crear");
                             String nombreEmpresa = sc.next();
-                            System.out.println("Introduzca el nombre del cliente que desea crear");
-                            Float valorAcciones = sc.nextFloat();
+                            System.out.println("Introduzca el valor de la cciones de la empresa");
+                            Double valorAcciones = Double.valueOf(sc.next());
                             simulador.bolsaDeValores.añadirEmpresa(nombreEmpresa,valorAcciones);
                             break;
                         case 10:
-                            System.out.println("Introduzca el DNI del cliente que desea borrar");
+                            System.out.println("Introduzca el nombre de la empresa que desea borrar");
                             String empresa = sc.next();
                             simulador.bolsaDeValores.eliminarEmpresa(empresa);
                             break;
@@ -80,10 +84,25 @@ public class InterfazDeUsuario {
                           //  simulador.bolsaDeValores.restaurarCopiaDeSeguridad();
                             break;
                         case 14:
-
+                            System.out.println("Introduzca el DNI del cliente que va a realizar la operación de compra");
+                            String clienteCompra = sc.next();
+                            System.out.println("Introduzca el dinero que desea invertir");
+                            Double inversion = Double.valueOf(sc.next());
+                            System.out.println("Introduzca el nombre de la empresa en la que desea invertir");
+                            String empresaInversion = sc.next();
+                            for (Empresa empresaIn:simulador.bolsaDeValores.getArrayListEmpresa()) {
+                                if(empresaIn.getNombre()==empresaInversion){
+                                    simulador.banco.peticionCompraAcciones(clienteCompra,empresaIn,inversion);
+                                }
+                            }
                             break;
                         case 15:
-
+                            System.out.println("Introduzca el DNI del cliente que va a realizar la operación de compra");
+                            String clienteVenta = sc.next();
+                            System.out.println("Introduzca el numero de acciones que desea vender");
+                            Double numeroAcciones = Double.valueOf(sc.next());
+                            System.out.println("Introduzca el nombre de la empresa de la cual quiere vender acciones");
+                            String empresaVenta = sc.next();
                             break;
                         case 16:
 
@@ -99,14 +118,14 @@ public class InterfazDeUsuario {
             } catch (InputMismatchException e) {
                 System.out.println("Ha introducido un caracter no válido.Debe introducir un número comprendido entre 0-18 ambos inclusive");
                 sc.next();
-            } catch (FueraDeRangoMenu fueraDeRangoMenu) {
-                System.out.println(fueraDeRangoMenu.getMessage());
+            } catch (FueraDeRangoMenuException fueraDeRangoMenuException) {
+                System.out.println(fueraDeRangoMenuException.getMessage());
             }
         }
 
 
     }
-    private  void pintarMenu(){
+    private void pintarMenu(){
         System.out.println("SEÑALE LA OPCIÓN QUE DESEE REALIZAR");
         System.out.println("0.- Salir");
         System.out.println("-------------- ESTADO ---------------------");
