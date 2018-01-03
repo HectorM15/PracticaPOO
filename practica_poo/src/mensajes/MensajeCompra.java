@@ -7,4 +7,8 @@ public class MensajeCompra extends Mensaje {
         super(identificador, realizador, receptor);
         this.cantidadInvertida=cantidadInvertida;
     }
+
+    public String getCantidadInvertida() {
+        return cantidadInvertida;
+    }
 }

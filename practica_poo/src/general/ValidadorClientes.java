@@ -1,10 +1,7 @@
 package general;
 
 import banco.Cliente;
-import excepciones.CampoVacioException;
-import excepciones.NoEsUnDNIException;
-import excepciones.SaldoInsuficienteException;
-import excepciones.SaldoNegativoVacioException;
+import excepciones.*;
 
 public class ValidadorClientes extends ValidarPersona {
 
@@ -23,9 +20,9 @@ public class ValidadorClientes extends ValidarPersona {
         }
     }
 
-    public void validarVentaAccionesCliente(Cliente persona,Integer numeroAcciones) throws SaldoInsuficienteException {
-        if (persona.getSaldo() < inversion) {
-            throw new SaldoInsuficienteException("El saldo del cliente no es suficiente para realizar esta operación");
+    public void validarVentaAccionesCliente(Cliente persona, Integer numeroAcciones, String nombreEmpresa) throws  NoHaySuficientesAccionesExceptions {
+        if (persona.getPaqueteDeAcciones().getNumeroAccionesPorEmpresa(nombreEmpresa) == 0 || persona.getPaqueteDeAcciones().getNumeroAccionesPorEmpresa(nombreEmpresa) == null) {
+            throw new NoHaySuficientesAccionesExceptions("No dispones de acciones sufcientes acciones de la empresa "+nombreEmpresa);
         }
     }
 }

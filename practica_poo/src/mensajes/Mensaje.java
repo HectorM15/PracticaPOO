@@ -12,4 +12,16 @@ abstract public class Mensaje {
         this.realizador = realizador;
         this.receptor = receptor;
     }
+
+    public Integer getIdentificador() {
+        return identificador;
+    }
+
+    public String getRealizador() {
+        return realizador;
+    }
+
+    public String getReceptor() {
+        return receptor;
+    }
 }

@@ -8,7 +8,11 @@ import java.io.*;
 public class Cliente extends Persona implements Serializable{
 
     protected Double saldo;
-    private PaqueteDeAcciones paqueteDeAcciones;
+    protected PaqueteDeAcciones paqueteDeAcciones;
+
+    public PaqueteDeAcciones getPaqueteDeAcciones() {
+        return paqueteDeAcciones;
+    }
 
     public Cliente(String DNI, String nombre, Double saldo) {
         super(DNI, nombre);

@@ -90,28 +90,26 @@ public class InterfazDeUsuario {
                             Double inversion = Double.valueOf(sc.next());
                             System.out.println("Introduzca el nombre de la empresa en la que desea invertir");
                             String empresaInversion = sc.next();
-                            for (Empresa empresaIn:simulador.bolsaDeValores.getArrayListEmpresa()) {
-                                if(empresaIn.getNombre()==empresaInversion){
-                                    simulador.banco.peticionCompraAcciones(clienteCompra,empresaIn,inversion);
-                                }
-                            }
+                            simulador.banco.peticionCompraAcciones(clienteCompra,empresaInversion,inversion);
                             break;
                         case 15:
                             System.out.println("Introduzca el DNI del cliente que va a realizar la operación de compra");
                             String clienteVenta = sc.next();
                             System.out.println("Introduzca el numero de acciones que desea vender");
-                            Double numeroAcciones = Double.valueOf(sc.next());
+                            Integer numeroAcciones = Integer.valueOf(sc.next());
                             System.out.println("Introduzca el nombre de la empresa de la cual quiere vender acciones");
                             String empresaVenta = sc.next();
+                            simulador.banco.peticionVentaDeAcciones(clienteVenta,empresaVenta,numeroAcciones);
                             break;
                         case 16:
-
+                            // ACTUALIZAR VALORES
                             break;
                         case 17:
-
+                            System.out.println("------------------ OPERACIONES PENDIENTES ---------------");
+                            simulador.agenteDeInversiones.mostarColasOperaciones();
                             break;
                         case 18:
-
+                            // EJECUTAR ACCIONES
                             break;
                     }
                 }
@@ -125,6 +123,7 @@ public class InterfazDeUsuario {
 
 
     }
+
     private void pintarMenu(){
         System.out.println("SEÑALE LA OPCIÓN QUE DESEE REALIZAR");
         System.out.println("0.- Salir");

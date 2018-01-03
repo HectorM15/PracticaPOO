@@ -1,13 +1,11 @@
 package banco;
 
 import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
-import excepciones.CampoVacioException;
-import excepciones.NoEsUnDNIException;
-import excepciones.SaldoInsuficienteException;
-import excepciones.SaldoNegativoVacioException;
+import excepciones.*;
 import general.ValidadorClientes;
 import mensajes.Mensaje;
 import mensajes.MensajeCompra;
+import mensajes.MensajeVenta;
 
 import java.io.*;
 import java.util.HashMap;
@@ -90,11 +88,11 @@ public class Banco {
         return agenteDeInversiones;
     }
 
-    public void peticionCompraAcciones(String dni,Empresa empresa, Double inversion) {
+    public void peticionCompraAcciones(String dni,String empresa, Double inversion) {
         Cliente cliente = hashMapCliente.get(dni);
         try {
             validadorClientes.validarCompraAccionesCliente(cliente,inversion);
-            MensajeCompra mensajeCompra= new MensajeCompra(agenteDeInversiones.getIdentificadorOperaciones(),cliente.getNombre(),empresa.getNombre(),inversion.toString());
+            MensajeCompra mensajeCompra= new MensajeCompra(agenteDeInversiones.getIdentificadorOperaciones(),cliente.getNombre(),empresa,inversion.toString());
             if (cliente instanceof ClientePremium == false) {
                 ((ClientePremium)cliente).getAgenteDeInversiones().añadirOperacionALaCola(mensajeCompra);
             } else {
@@ -105,8 +103,19 @@ public class Banco {
         }
     }
 
-    public void ventaDeAcciones(String dni,String empresa, Double inversion){
+    public void peticionVentaDeAcciones(String dni,String empresa, Integer numeroAcciones){
         Cliente cliente = hashMapCliente.get(dni);
+        try {
+            validadorClientes.validarVentaAccionesCliente(cliente,numeroAcciones,empresa);
+            MensajeVenta mensajeVenta= new MensajeVenta(agenteDeInversiones.getIdentificadorOperaciones(),cliente.getDNI(),empresa,numeroAcciones);
+            if (cliente instanceof ClientePremium == false) {
+                ((ClientePremium)cliente).getAgenteDeInversiones().añadirOperacionALaCola(mensajeVenta);
+            } else {
+                this.getAgenteDeInversiones().añadirOperacionALaCola(mensajeVenta);
+            }
+        } catch (NoHaySuficientesAccionesExceptions noHaySuficientesAccionesExceptions) {
+            System.out.println(noHaySuficientesAccionesExceptions.getMessage());
+        }
     }
 
     public void recomendarInversion(String dni) {

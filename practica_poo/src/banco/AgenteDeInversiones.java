@@ -3,6 +3,7 @@ package banco;
 import mensajes.Mensaje;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 public class AgenteDeInversiones extends Persona  {
@@ -37,5 +38,12 @@ public class AgenteDeInversiones extends Persona  {
             }
         }
         return mejorIncremento;
+    }
+    public void mostarColasOperaciones(){
+        Iterator iterator = colaOperacionesPendientes.iterator();
+        while (iterator.hasNext()){
+            Mensaje mensaje= (Mensaje) iterator.next();
+            System.out.println(mensaje.getIdentificador()+"|"+mensaje.getRealizador()+"|"+mensaje.getReceptor());
+        }
     }
 }
